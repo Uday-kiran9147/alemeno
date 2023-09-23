@@ -2,7 +2,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 class NotificationService {
    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-
+  void listenToNotifications()async{
+    FirebaseMessaging.onMessage.listen((message) {
+      print(message.notification!.title);
+      print(message.notification!.body);
+     });
+  }
   Future<String?> getDeviceToken()async {
     String? notificationToken=await firebaseMessaging.getToken();
     return notificationToken!;
