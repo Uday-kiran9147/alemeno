@@ -34,6 +34,9 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     notificationService.requestNotification_permission();
+    notificationService. getDeviceToken().then((value) => {
+      print("Device token "+value.toString())
+    });
   }
   @override
   Widget build(BuildContext context) {

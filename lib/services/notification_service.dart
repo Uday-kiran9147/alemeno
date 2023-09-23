@@ -1,8 +1,13 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class NotificationService {
-  void requestNotification_permission()async{
    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+
+  Future<String?> getDeviceToken()async {
+    String? notificationToken=await firebaseMessaging.getToken();
+    return notificationToken!;
+  }
+  void requestNotification_permission()async{
    NotificationSettings notificationSettings= await firebaseMessaging.requestPermission(
       alert: true,
       announcement: true,
