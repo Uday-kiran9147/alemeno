@@ -1,11 +1,18 @@
+import 'package:alemeno/firebase_options.dart';
 import 'package:alemeno/routes/app_routes.dart';
+import 'package:alemeno/services/notification_service.dart';
 import 'package:camera/camera.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'Screens/meal_feed_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // firebase_options.dart file is intentionally pushed onto the repository
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   final cameras = await availableCameras();
   final firstCamera = cameras.first;
   runApp(MyApp(
@@ -13,9 +20,21 @@ void main() async {
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.cameradescription});
   final CameraDescription cameradescription;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  NotificationService notificationService = NotificationService();
+  @override
+  void initState() {
+    super.initState();
+    notificationService.requestNotification_permission();
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,7 +43,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
           fontFamily: 'Andika'),
-      home: MyHomePage(cameradescription: cameradescription),
+      home: MyHomePage(cameradescription: widget.cameradescription),
       onGenerateRoute: AppRoutes.ongenerateRoute,
     );
   }

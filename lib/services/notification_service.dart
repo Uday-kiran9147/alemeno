@@ -12,5 +12,14 @@ class NotificationService {
       provisional: true,
       sound: true,
     );
-    print(notificationSettings.authorizationStatus);
+    if(notificationSettings.authorizationStatus == AuthorizationStatus.authorized){
+      print("Permission granted");
+    }
+    else if(notificationSettings.authorizationStatus == AuthorizationStatus.provisional){
+      print("Permission provisional");
+    }
+    else if(notificationSettings.authorizationStatus == AuthorizationStatus.denied){
+      print("Permission denied");
+    }
+    print("Permission result "+notificationSettings.authorizationStatus.toString());
   }}
