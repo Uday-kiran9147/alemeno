@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
             useMaterial3: true,
             fontFamily: 'Andika'),
         home: MyHomePage(cameradescription: widget.cameradescription),
-        onGenerateRoute: AppRoutes.ongenerateRoute,
+        onGenerateRoute: AppRoutes.ongenerateRoute,debugShowCheckedModeBanner: false,
       ),
     );
   }
@@ -81,24 +81,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Home"),
+        title: Text("Home"),centerTitle: true,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Center(
-            child: GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) =>
-                            MealFeedScreen(camera: widget.cameradescription))),
-                child: SizedBox(
-                    width: 229,
-                    height: 56,
-                    child: Image.asset('assets/images/Share_Your_Meal.png'))),
-          )
-        ],
+      body: Center(
+        child: GestureDetector(
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) =>
+                        MealFeedScreen(camera: widget.cameradescription))),
+            child: SizedBox(
+                width: 220,
+                height: 40,
+                child: Image.asset('assets/images/Share_Your_Meal.png'))),
       ),
     );
   }
