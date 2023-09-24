@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:alemeno/providers/appstate.dart';
 import 'package:alemeno/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class MealFeedScreen extends StatefulWidget {
@@ -24,12 +26,13 @@ Display the picture with an Image widget.
 class _MealFeedScreenState extends State<MealFeedScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  bool iscaputring =false;
   XFile? image;
   CameraPreview? preview;
   @override
   void initState() {
     super.initState();
-    _controller = CameraController(widget.camera, ResolutionPreset.medium);
+    _controller = CameraController(widget.camera, ResolutionPreset.low);
     _initializeControllerFuture = _controller.initialize();
   }
 
@@ -84,7 +87,7 @@ class _MealFeedScreenState extends State<MealFeedScreen> {
                             Text(
                               image == null
                                   ? "Select Your Meal\n"
-                                  : "Will You Eat This ",
+                                  : "Will You Eat This\n",
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             // ):Text(),
@@ -96,9 +99,13 @@ class _MealFeedScreenState extends State<MealFeedScreen> {
                                   if (image == null) {
                                     try {
                                       await _initializeControllerFuture;
+                                      setState(() {
+                                        iscaputring = true;
+                                      });
                                       image = await _controller.takePicture();
-                                      setState(() {});
-                                      print("Image path uday" + image!.path);
+                                       setState(() {
+                                        iscaputring = false;
+                                      });
                                     } catch (e) {
                                       print(e.toString());
                                       ScaffoldMessenger.of(context)
@@ -106,16 +113,19 @@ class _MealFeedScreenState extends State<MealFeedScreen> {
                                               content: Text(e.toString())));
                                     }
                                   } else {
-                                    // database code
+                                   await Provider.of<AppState>(context,listen: false).saveImageToFirestore(File(image!.path));
                                     Navigator.pushNamed(
                                         context, AppRoutes.MESSAGE);
                                   }
                                 },
-                                child: image != null
+                                // -iscapturing 
+                                //    - image!==null?
+                                //    - else case
+                                child:iscaputring==false? image != null 
                                     ? Image.asset(
                                         'assets/images/Yes_Button.png')
                                     : Image.asset(
-                                        'assets/images/Camera_Button.png')),
+                                        'assets/images/Camera_Button.png'):CircularProgressIndicator())
                           ],
                         ),
                       ),

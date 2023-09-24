@@ -1,19 +1,29 @@
 import 'package:alemeno/firebase_options.dart';
+import 'package:alemeno/providers/appstate.dart';
 import 'package:alemeno/routes/app_routes.dart';
 import 'package:alemeno/services/notification_service.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'Screens/meal_feed_screen.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseBackGroundMessageHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // firebase_options.dart file is intentionally pushed onto the repository
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
+  );
   final cameras = await availableCameras();
+  FirebaseMessaging.onBackgroundMessage(_firebaseBackGroundMessageHandler);
+ await FirebaseMessaging.instance.getInitialMessage();
   final firstCamera = cameras.first;
   runApp(MyApp(
     cameradescription: firstCamera,
@@ -35,20 +45,24 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     notificationService.requestNotification_permission();
     notificationService.listenToNotifications();
-    notificationService. getDeviceToken().then((value) => {
-      print("Device token "+value.toString())
-    });
+    notificationService
+        .getDeviceToken()
+        .then((value) => {print("Device token " + value.toString())});
   }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Alemeno',
-      theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-          fontFamily: 'Andika'),
-      home: MyHomePage(cameradescription: widget.cameradescription),
-      onGenerateRoute: AppRoutes.ongenerateRoute,
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => AppState())],
+      child: MaterialApp(
+        title: 'Alemeno',
+        theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+            fontFamily: 'Andika'),
+        home: MyHomePage(cameradescription: widget.cameradescription),
+        onGenerateRoute: AppRoutes.ongenerateRoute,
+      ),
     );
   }
 }
